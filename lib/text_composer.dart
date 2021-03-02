@@ -1,9 +1,12 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 
 class TextComposer extends StatefulWidget {
 
   TextComposer(this.sendMessage);
-  Function(String) sendMessage;
+  final Function({String text, File image}) sendMessage;
 
   @override
   _TextComposerState createState() => _TextComposerState();
@@ -29,7 +32,12 @@ class _TextComposerState extends State<TextComposer> {
         children: [
           IconButton(
               icon: Icon(Icons.camera_alt_rounded),
-              onPressed: null),
+              onPressed: () async {
+                final File image = await ImagePicker.pickImage(source: ImageSource.camera); //abrindo a câmera ao clicar
+                if(image == null) return;
+                widget.sendMessage(image: image);
+              }
+          ),
           Expanded( //campo do texto para ocupar o maior espaço possivel da linha
               child: TextField( //enviar com ok do teclado
                 controller: _textController,
@@ -40,7 +48,7 @@ class _TextComposerState extends State<TextComposer> {
                   });
                 },
                 onSubmitted: (text) {
-                  widget.sendMessage(text); //pega o texto digitado, joga para a função sendmessage, que joga para o TextComposer
+                  widget.sendMessage(text: text); //pega o texto digitado, joga para a função sendmessage, que joga para o TextComposer
                   _resetFields();
                 },
               )
@@ -49,7 +57,7 @@ class _TextComposerState extends State<TextComposer> {
             icon: Icon(Icons.send),
             color: Colors.blueAccent,
             onPressed: _isComposing ? () {
-              widget.sendMessage(_textController.text);
+              widget.sendMessage(text: _textController.text);
               _resetFields();
             } : null,
           )
