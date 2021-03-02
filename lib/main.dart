@@ -42,7 +42,7 @@ class _HomeState extends State<Home> {
       theme: ThemeData(
           primarySwatch: Colors.blue,
           iconTheme: IconThemeData(
-              color: Colors.blue
+              color: Colors.blueAccent
           )
       ),
       home: ChatScreen(),
