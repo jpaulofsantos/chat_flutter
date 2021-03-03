@@ -20,7 +20,7 @@ class _ChatScreenState extends State<ChatScreen> {
     final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
     FirebaseUser _currentUser;
-    bool _isLoading;
+    bool _isLoading = false;
 
 
     @override
@@ -82,7 +82,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
     if(image != null) { // inserindo imagem no firebase
       StorageUploadTask task = FirebaseStorage.instance.ref().child( // no child, cria-se o nome/pasta para os arquivos e passa o arquivo
-        DateTime.now().millisecondsSinceEpoch.toString()).putFile(image);
+        user.uid + DateTime.now().millisecondsSinceEpoch.toString()).putFile(image); //concatenando o userid para evitar imagens com o mesmo time
 
       setState(() { //carregando a imagem
         _isLoading = true;
@@ -145,7 +145,9 @@ class _ChatScreenState extends State<ChatScreen> {
                         itemCount: docs.length,
                           reverse: true,
                           itemBuilder: (context, index) {
-                          return ChatMessage(docs[index].data, true);
+                          return ChatMessage(docs[index].data,
+                            docs[index].data['uid'] == _currentUser?.uid //compara com o userid logado. o ? faz
+                          );
 
                           }
                       );
@@ -153,9 +155,9 @@ class _ChatScreenState extends State<ChatScreen> {
                 },
               )
           ),
+          _isLoading ? LinearProgressIndicator() : Container(),
           TextComposer((_sendMessage)
-
-        ),
+          ),
         ],
       ),
     );
